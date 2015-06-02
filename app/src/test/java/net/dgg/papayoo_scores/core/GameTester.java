@@ -46,9 +46,30 @@ public class GameTester {
     }
 
     @Test
-    public void test_canAddPlayer_alreadyAdedPlayer_shouldBeFalse(){
+    public void test_canAddPlayer_alreadyAddedPlayer_shouldBeFalse(){
         Game subject = new Game().addPlayer("Daniel");
 
         assertThat(subject.canAddPlayer("Daniel"), is(false));
+    }
+
+    @Test
+    public void test_canAddPlayer_LessThanMaxPlayers_shouldBeTrue(){
+        Game subject = new Game();
+
+        for (int i = 0; i < Game.MAX_PLAYERS; i++){
+            assertThat(subject.canAddPlayer(), is(true));
+            subject.addPlayer(String.valueOf(i));
+        }
+    }
+
+    @Test
+    public void test_canAddPlayer_MoreThanMaxPlayers_shouldBeFalse(){
+        Game subject = new Game();
+
+        // add MAX_PLAYERS
+        for (int i = 0; i < Game.MAX_PLAYERS; i++){
+            subject.addPlayer(String.valueOf(i));
+        }
+        assertThat(subject.canAddPlayer(), is(false));
     }
 }

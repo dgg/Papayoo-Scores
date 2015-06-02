@@ -6,9 +6,13 @@ import java.util.*;
  * Created by DGG on 02-06-2015.
  */
 public class Game {
-    private final ArrayList<String> _players = new ArrayList<String>(8);
+    public static final int MAX_PLAYERS = 8;
+    private final ArrayList<String> _players = new ArrayList<String>(MAX_PLAYERS);
 
     public Game addPlayer(String player) {
+        if (!canAddPlayer()) {
+            throw TooManyPlayersException.forSize(_players.size());
+        }
         if (!canAddPlayer(player)){
             throw DuplicatedPlayerException.forPlayer(player);
         }
@@ -18,6 +22,10 @@ public class Game {
 
     public boolean canAddPlayer(String player){
         return !_players.contains(player);
+    }
+
+    public boolean canAddPlayer(){
+        return _players.size() < MAX_PLAYERS;
     }
 }
 
