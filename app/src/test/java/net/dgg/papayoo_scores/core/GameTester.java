@@ -1,9 +1,15 @@
 package net.dgg.papayoo_scores.core;
 
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+import com.squareup.otto.ThreadEnforcer;
+
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -11,65 +17,84 @@ import static org.junit.Assert.assertThat;
  */
 public class GameTester {
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
+    private Game _subject;
+    private Bus _bus;
 
-    @Test
-    public void test_addPlayer_differentPlayers_shouldThrow(){
-        Game subject = new Game()
-                .addPlayer("Daniel");
+    @Before
+    public void setup() {
+        _bus = new Bus(ThreadEnforcer.ANY);
+        _subject = new Game(_bus);
+        _bus.register(this);
+    }
 
-        subject.addPlayer("Not Daniel");
+    @After
+    public void teardown() {
+        _bus.unregister(this);
     }
 
     @Test
-    public void test_addPlayer_alreadyAddedPlayer_shouldThrow(){
-        Game subject = new Game()
+    public void test_addPlayer_differentPlayers_shouldNotRaise(){
+        Game subject = _subject
                 .addPlayer("Daniel");
 
-        exception.expect(DuplicatedPlayerException.class);
+        subject.addPlayer("Not Daniel");
+
+        _bus.register(new Object() {
+            @Subscribe
+            public void onDuplicated(DuplicatedPlayer duplicated) {
+                assertFalse("should not raise", true);
+            }
+        });
+    }
+
+    @Test
+    public void test_addPlayer_alreadyAddedPlayer_shouldRaise(){
+        Game subject = _subject
+                .addPlayer("Daniel");
+
+        _bus.register(new Object() {
+            @Subscribe
+            public void onDuplicated(DuplicatedPlayer duplicated) {
+                assertThat(duplicated.getPlayer(), is("Daniel"));
+            }
+        });
+
         subject.addPlayer("Daniel");
     }
 
     @Test
     public void test_canAddPlayer_EmptyGame_shouldBeTrue(){
-        Game subject = new Game();
-
-        assertThat(subject.canAddPlayer("any"), is(true));
+        assertThat(_subject.canAddPlayer("any"), is(true));
     }
 
     @Test
     public void test_canAddPlayer_differentPlayer_shouldBeTrue(){
-        Game subject = new Game().addPlayer("Daniel");
+        Game subject = _subject.addPlayer("Daniel");
 
         assertThat(subject.canAddPlayer("notDaniel"), is(true));
     }
 
     @Test
     public void test_canAddPlayer_alreadyAddedPlayer_shouldBeFalse(){
-        Game subject = new Game().addPlayer("Daniel");
+        Game subject = _subject.addPlayer("Daniel");
 
         assertThat(subject.canAddPlayer("Daniel"), is(false));
     }
 
     @Test
     public void test_canAddPlayer_LessThanMaxPlayers_shouldBeTrue(){
-        Game subject = new Game();
-
         for (int i = 0; i < Game.MAX_PLAYERS; i++){
-            assertThat(subject.canAddPlayer(), is(true));
-            subject.addPlayer(String.valueOf(i));
+            assertThat(_subject.canAddPlayer(), is(true));
+            _subject.addPlayer(String.valueOf(i));
         }
     }
 
     @Test
     public void test_canAddPlayer_MoreThanMaxPlayers_shouldBeFalse(){
-        Game subject = new Game();
-
         // add MAX_PLAYERS
         for (int i = 0; i < Game.MAX_PLAYERS; i++){
-            subject.addPlayer(String.valueOf(i));
+            _subject.addPlayer(String.valueOf(i));
         }
-        assertThat(subject.canAddPlayer(), is(false));
+        assertThat(_subject.canAddPlayer(), is(false));
     }
 }
