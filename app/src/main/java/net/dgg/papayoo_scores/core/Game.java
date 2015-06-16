@@ -1,7 +1,5 @@
 package net.dgg.papayoo_scores.core;
 
-import com.squareup.otto.Bus;
-
 import java.util.*;
 
 /**
@@ -11,30 +9,28 @@ public class Game{
 
     public static final int MAX_PLAYERS = 8;
     private final ArrayList<String> _players = new ArrayList<String>(MAX_PLAYERS);
-    private final Bus _bus;
+    private final IObserver _observer;
 
-    public Game(Bus bus) {
-        _bus = bus;
+    public Game(IObserver observer) {
+        _observer = observer;
     }
 
     public Game addPlayer(String player) {
-        if (!canAddPlayer()) {
-            _bus.post(new TooManyPlayers(_players.size()));
-        }
-        if (!canAddPlayer(player)){
-            _bus.post(new DuplicatedPlayer(player));
-            //_duplicated.notifyObservers(new DuplicatedPlayer(player));
-        }
+        if (maxPlayers()) throw TooManyPlayersException.forSize(MAX_PLAYERS);
+        if (!canAddPlayer(player)) throw DuplicatedPlayerException.forPlayer(player);
+
         _players.add(player);
+        if (maxPlayers()) _observer.notify(new MaxPlayersReached(MAX_PLAYERS));
+
         return this;
+    }
+
+    private boolean maxPlayers(){
+        return _players.size() == MAX_PLAYERS;
     }
 
     public boolean canAddPlayer(String player){
         return !_players.contains(player);
-    }
-
-    public boolean canAddPlayer(){
-        return _players.size() < MAX_PLAYERS;
     }
 }
 

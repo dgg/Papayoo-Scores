@@ -3,14 +3,14 @@ package net.dgg.papayoo_scores.core;
 /**
  * Created by DGG on 02-06-2015.
  */
-public class TooManyPlayers{
-    private final int _size;
+public class MaxPlayersReached {
 
-    public TooManyPlayers(int size) {
+    private final int _size;
+    public MaxPlayersReached(int size) {
         _size = size;
     }
 
-    public int getSize() {
+    public int sßize() {
         return _size;
     }
 }
