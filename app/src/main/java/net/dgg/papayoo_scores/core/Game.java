@@ -15,14 +15,15 @@ public class Game{
         _observer = observer;
     }
 
-    public Game addPlayer(String player) {
-        if (maxPlayers()) throw TooManyPlayersException.forSize(MAX_PLAYERS);
-        if (!canAddPlayer(player)) throw DuplicatedPlayerException.forPlayer(player);
+    public Game addPlayer(String... players) {
+        for (String player : players) {
+            if (maxPlayers()) throw TooManyPlayersException.forSize(MAX_PLAYERS);
+            if (!canAddPlayer(player)) throw DuplicatedPlayerException.forPlayer(player);
 
-        _players.add(player);
-        if (maxPlayers()) _observer.notify(new MaxPlayersReached(MAX_PLAYERS));
-        if (minPlayers()) _observer.notify(new MinPlayersReached(MIN_PLAYERS));
-
+            _players.add(player);
+            if (maxPlayers()) _observer.notify(new MaxPlayersReached(MAX_PLAYERS));
+            if (minPlayers()) _observer.notify(new MinPlayersReached(MIN_PLAYERS));
+        }
         return this;
     }
 
@@ -36,6 +37,14 @@ public class Game{
 
     public boolean canAddPlayer(String player){
         return !_players.contains(player);
+    }
+
+    public Game start(){
+        if (_players.size() < MIN_PLAYERS) {
+            throw TooFewPlayersException.forSize(_players.size(), MIN_PLAYERS);
+        }
+
+        return this;
     }
 }
 

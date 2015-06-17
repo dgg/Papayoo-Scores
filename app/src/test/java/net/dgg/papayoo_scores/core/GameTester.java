@@ -8,7 +8,6 @@ import org.junit.rules.ExpectedException;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -70,18 +69,13 @@ public class GameTester {
 
     @Test
     public void test_addPlayer_MaxPlayers_notifiesNoMorePlayers(){
-        for (int i = 0; i < Game.MAX_PLAYERS; i++){
-            _subject.addPlayer(String.valueOf(i));
-        }
+        withPlayers(Game.MAX_PLAYERS);
         verify(_observer, atLeastOnce()).notify(any(MaxPlayersReached.class));
     }
 
     @Test
     public void test_addPlayer_MoreThanMaxPlayers_shouldThrow(){
-        // add MAX_PLAYERS
-        for (int i = 0; i < Game.MAX_PLAYERS; i++){
-            _subject.addPlayer(String.valueOf(i));
-        }
+        withPlayers(Game.MAX_PLAYERS);
 
         exception.expect(TooManyPlayersException.class);
         _subject.addPlayer("one too many");
@@ -89,10 +83,21 @@ public class GameTester {
 
     @Test
     public void test_addPlayer_MinPlayers_notifiesCanStart() {
-        for (int i = 0; i < Game.MIN_PLAYERS; i++){
+        withPlayers(Game.MIN_PLAYERS);
+        verify(_observer).notify(any(MinPlayersReached.class));
+    }
+
+    private void withPlayers(int count){
+        for (int i = 0; i < count; i++){
             _subject.addPlayer(String.valueOf(i));
         }
-        verify(_observer).notify(any(MinPlayersReached.class));
+    }
 
+    @Test
+    public void test_start_lessThanMinPlayers_shouldThrow() {
+        _subject.addPlayer("only player");
+
+        exception.expect(TooFewPlayersException.class);
+        _subject.start();
     }
 }
