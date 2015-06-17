@@ -1,12 +1,9 @@
 package net.dgg.papayoo_scores.core;
 
-/**
- * Created by DGG on 02-06-2015.
- */
-public class MaxPlayersReached {
+public class MinPlayersReached {
 
     private final int _size;
-    public MaxPlayersReached(int size) {
+    public MinPlayersReached(int size) {
         _size = size;
     }
 
@@ -14,4 +11,3 @@ public class MaxPlayersReached {
         return _size;
     }
 }
-

@@ -8,6 +8,8 @@ import org.junit.rules.ExpectedException;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -71,7 +73,7 @@ public class GameTester {
         for (int i = 0; i < Game.MAX_PLAYERS; i++){
             _subject.addPlayer(String.valueOf(i));
         }
-        verify(_observer).notify(any(MaxPlayersReached.class));
+        verify(_observer, atLeastOnce()).notify(any(MaxPlayersReached.class));
     }
 
     @Test
@@ -83,5 +85,14 @@ public class GameTester {
 
         exception.expect(TooManyPlayersException.class);
         _subject.addPlayer("one too many");
+    }
+
+    @Test
+    public void test_addPlayer_MinPlayers_notifiesCanStart() {
+        for (int i = 0; i < Game.MIN_PLAYERS; i++){
+            _subject.addPlayer(String.valueOf(i));
+        }
+        verify(_observer).notify(any(MinPlayersReached.class));
+
     }
 }

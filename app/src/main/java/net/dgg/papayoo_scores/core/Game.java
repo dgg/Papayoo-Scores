@@ -7,7 +7,7 @@ import java.util.*;
  */
 public class Game{
 
-    public static final int MAX_PLAYERS = 8;
+    public static final int MAX_PLAYERS = 8, MIN_PLAYERS = 3;
     private final ArrayList<String> _players = new ArrayList<String>(MAX_PLAYERS);
     private final IObserver _observer;
 
@@ -21,12 +21,17 @@ public class Game{
 
         _players.add(player);
         if (maxPlayers()) _observer.notify(new MaxPlayersReached(MAX_PLAYERS));
+        if (minPlayers()) _observer.notify(new MinPlayersReached(MIN_PLAYERS));
 
         return this;
     }
 
     private boolean maxPlayers(){
         return _players.size() == MAX_PLAYERS;
+    }
+
+    private boolean minPlayers(){
+        return _players.size() == MIN_PLAYERS;
     }
 
     public boolean canAddPlayer(String player){
