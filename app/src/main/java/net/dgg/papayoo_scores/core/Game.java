@@ -60,7 +60,7 @@ public class Game{
 
         Player[] players = new Player[_participants.size()];
         for (int i = 0; i < _participants.size(); i++) {
-            players[i] = new Player(_participants.get(i), get_hands());
+            players[i] = new Player(_participants.get(i));
         }
         _players = new Players(players);
 

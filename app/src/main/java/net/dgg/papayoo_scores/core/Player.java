@@ -10,11 +10,6 @@ public class Player{
         _score = 0;
     }
 
-    public Player(String name, int numberOfHands){
-        _name = name;
-        _score = 0;
-    }
-
     public Player increment(Point points){
         _score += points.get_value();
         return this;

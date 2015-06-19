@@ -116,33 +116,6 @@ public class GameTester {
         _subject.start(4);
     }
 
-    /*@Test
-    public void test_score_notStarted_shouldThrow() {
-        _subject.addPlayers("A", "B", "C");
-
-        exception.expect(GameNotStartedException.class);
-
-        _subject.score("A");
-    }
-
-    @Test
-    public void test_getScore_notStarted_shouldThrow() {
-        _subject.addPlayers("A", "B", "C");
-
-        exception.expect(GameNotStartedException.class);
-
-        _subject.get_score("A");
-    }
-
-    @Test
-    public void test_score_existingPlayer_increasesPlayerScore() {
-        _subject.addPlayers("A", "B", "C");
-
-        exception.expect(GameNotStartedException.class);
-
-        _subject.get_score("A");
-    }*/
-
     @Test
     public void test_nextHand_notStarted_shouldThrow() {
         _subject.addPlayers("A", "B", "C");

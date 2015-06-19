@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -16,34 +17,40 @@ public class PointTester {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void test_ctor_validValues_shouldSetValue() {
+    public void test_of_validValues_shouldSetValue() {
         Point subject;
         for (int i = Point.MIN; i <= Point.MAX; i++) {
-            subject = new Point(i);
+            subject = Point.of(i);
 
             assertThat(subject.get_value(), is(i));
         }
-        subject = new Point(Point.PAPAYOO);
+        subject = Point.of(Point.PAPAYOO);
         assertThat(subject.get_value(), is(Point.PAPAYOO));
     }
 
     @Test
-    public void test_ctor_tooSmall_shouldThrow() {
+    public void test_of_tooSmall_shouldThrow() {
         exception.expect(IllegalArgumentException.class);
 
-        new Point(-1);
+        Point.of(-1);
     }
 
     @Test
-    public void test_ctor_tooBig_shouldThrow() {
+    public void test_of_tooBig_shouldThrow() {
         exception.expect(IllegalArgumentException.class);
 
-        new Point(21);
+        Point.of(21);
     }
+
     @Test
-    public void test_ctor_waaaayTooBig_shouldThrow() {
+    public void test_of_waaaayTooBig_shouldThrow() {
         exception.expect(IllegalArgumentException.class);
 
-        new Point(41);
+        Point.of(41);
+    }
+
+    @Test
+    public void test_of_sameValues_shouldGiveSameInstance() {
+        assertSame(Point.of(5), Point.of(5));
     }
 }
