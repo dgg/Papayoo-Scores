@@ -4,8 +4,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.regex.Matcher;
+
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsSame.sameInstance;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -57,5 +60,30 @@ public class PlayersTester {
         Player found = subject.find("A");
 
         assertThat(found, sameInstance(a));
+    }
+
+    @Test
+    public void test_findWithLowestScore_singlePlayer_shouldReturnOnePlayer(){
+        Player a = new Player("a").increment(Point.of(20)),
+                b = new Player("b").increment(Point.of(10));
+        Players subject = new Players(a, b);
+        Player[] single =  subject.findWithLowestScore();
+
+        assertThat(single.length, is(1));
+        assertThat(single[0], sameInstance(b));
+    }
+
+    @Test
+    public void test_findWithLowestScore_twoPlayers_shouldReturnPlayers(){
+        Player a = new Player("a").increment(Point.of(10)),
+                b = new Player("b").increment(Point.of(20)),
+                c = new Player("c").increment(Point.of(10));
+
+        Players subject = new Players(a, b, c);
+        Player[] single =  subject.findWithLowestScore();
+
+        assertThat(single.length, is(2));
+        assertThat(single[0], sameInstance(a));
+        assertThat(single[1], sameInstance(c));
     }
 }

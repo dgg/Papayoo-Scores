@@ -10,8 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.isNotNull;
-import static org.mockito.Matchers.notNull;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -146,6 +144,60 @@ public class GameTester {
         }
 
         assertThat(handsPlayed, is(6));
+        assertNull(_subject.nextHand());
+    }
+
+    @Test
+    public void test_simulateOneRound_noSingleWinner_shouldAllowExtraHand(){
+        _subject.addPlayers("a", "b", "c").start(1);
+
+        // play 3 hands (one round of 3 players)
+        assertThat(_subject.get_hands(), is(3));
+
+        Hand first = _subject.nextHand();
+        first.score("a", Point.some(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        first.score("b", Point.some(11, 12, 13, 14, 15, 16, 17, 18, 19, 20));
+        first.score("c", Point.of(40));
+        first.end();
+
+        Hand second = _subject.nextHand();
+        second.score("b", Point.some(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        second.score("c", Point.some(11, 12, 13, 14, 15, 16, 17, 18, 19, 20));
+        second.score("a", Point.of(40));
+        second.end();
+
+        Hand third = _subject.nextHand();
+        third.score("c", Point.some(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        third.score("a", Point.some(11, 12, 13, 14, 15, 16, 17, 18, 19, 20));
+        third.score("b", Point.of(40));
+        third.end();
+
+        assertThat(_subject.get_score("a"), is(250));
+        assertThat(_subject.get_score("b"), is(250));
+        assertThat(_subject.get_score("c"), is(250));
+
+
+        Player[] multiple = _subject.winners();
+        // multiple winners
+        assertThat(multiple.length, is(3));
+        // extra hand granted
+        assertThat(_subject.get_hands(), is(4));
+
+        Hand extra = _subject.nextHand();
+        extra.score("a", Point.some(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        extra.score("b", Point.some(11, 12, 13, 14, 15, 16, 17, 18, 19, 20));
+        extra.score("c", Point.of(40));
+        extra.end();
+
+        assertThat(_subject.get_score("a"), is(305));
+        assertThat(_subject.get_score("b"), is(405));
+        assertThat(_subject.get_score("c"), is(290));
+
+        Player[] single = _subject.winners();
+        // single winner: "c"
+        assertThat(single.length, is(1));
+        assertThat(single[0].isNamed("c"), is(true));
+        // no more hands
         assertNull(_subject.nextHand());
     }
 }

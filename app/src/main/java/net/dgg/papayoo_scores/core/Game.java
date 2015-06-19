@@ -72,11 +72,15 @@ public class Game{
     public Hand nextHand(){
         if (_players == null) throw new GameNotStartedException();
         Hand current = null;
-        if (_currentHand < _playedHands.length){
+        if (handsLeft()){
             current = new Hand(_players);
             _playedHands[_currentHand++] = current;
         }
         return current;
+    }
+
+    private boolean handsLeft(){
+        return _currentHand < _playedHands.length;
     }
 
     private Players _players;
@@ -85,16 +89,21 @@ public class Game{
         return null;
     }
 
-    public int get_score(String player){
+    public int get_score(String player) {
         if (_players == null) throw new GameNotStartedException();
-
-        return 0;
+        return _players.find(player).get_score();
     }
 
-    public Game endHand(){
-        return this;
+    public Player[] winners(){
+        if (_players == null) throw new GameNotStartedException();
+        if (handsLeft()) throw new GameNotFinishedException();
+
+        Player[] winners = _players.findWithLowestScore();
+        if (winners.length > 1){
+            _hands++;
+            _playedHands = Arrays.copyOf(_playedHands, _playedHands.length + 1);
+        }
+        return winners;
     }
-
-
 }
 

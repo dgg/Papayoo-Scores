@@ -5,3 +5,4 @@ public class GameNotStartedException extends IllegalStateException {
         super("The Game was not started");
     }
 }
+
